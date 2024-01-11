@@ -8,14 +8,14 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 %endif
 
 %global import_path github.com/containers/%{name}
-%global branch release-1.11
-%global commit0 3f98753bfdaa2c9e0465328b279f48bbdaa2ddaa
+#%%global branch release-1.11
+%global commit0 9e29e4cede9bdaa4a54aa5b0af86efedb823bde4
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Epoch: 2
 Name: skopeo
-Version: 1.11.2
-Release: 0.1%{?dist}
+Version: 1.13.3
+Release: 1%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -47,9 +47,12 @@ Requires: %{name} = %{epoch}:%{version}-%{release}
 #Requires: bats  (which RHEL8 doesn't have. If it ever does, un-comment this)
 Requires: gnupg
 Requires: jq
+Requires: golang
 Requires: podman
+Requires: crun
 Requires: httpd-tools
 Requires: openssl
+Requires: squashfs-tools
 
 %description tests
 %{summary}
@@ -121,6 +124,49 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Fri Aug 25 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.13.3
+- Related: #2176063
+
+* Fri Aug 11 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.2-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.13.2
+- Related: #2176063
+
+* Fri Jul 21 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.1-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.13.1
+- Related: #2176063
+
+* Fri Jul 07 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.13.0
+- Related: #2176063
+
+* Wed Jun 14 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.12.0-3
+- rebuild for following CVEs:
+CVE-2022-41724 CVE-2022-41725 CVE-2023-24537 CVE-2023-24538 CVE-2023-24534 CVE-2023-24536 CVE-2022-41723 CVE-2023-24539 CVE-2023-24540 CVE-2023-29400
+- Resolves: #2179967
+- Resolves: #2187323
+- Resolves: #2187384
+- Resolves: #2203703
+- Resolves: #2207523
+
+* Mon Apr 24 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.12.0-2
+- remove fakeroot from skopeo-tests
+- Related: #2176063
+
+* Wed Apr 19 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.12.0-1
+- update to 1.12.0
+- Related: #2176063
+
+* Mon Apr 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.11.3-0.1
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.11
+  (https://github.com/containers/skopeo/commit/d79588e)
+- Related: #2176063
+
+* Sun Mar 26 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.11.2-0.2
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.11
+  (https://github.com/containers/skopeo/commit/8191ef3)
+- Related: #2176063
+
 * Tue Feb 21 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.11.2-0.1
 - update to the latest content of https://github.com/containers/skopeo/tree/release-1.11
   (https://github.com/containers/skopeo/commit/3f98753)

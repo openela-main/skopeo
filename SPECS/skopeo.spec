@@ -16,7 +16,7 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 Epoch: 2
 Name: skopeo
 Version: 1.13.3
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -28,7 +28,7 @@ Source0: https://%{import_path}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar
 Source0: https://%{import_path}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
 %endif
 BuildRequires: git-core
-BuildRequires: golang >= 1.17.7
+BuildRequires: golang >= 1.20.6
 BuildRequires: /usr/bin/go-md2man
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
@@ -122,6 +122,14 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Tue Jan 23 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-3
+- Make the module buildable again
+- Resolves: RHEL-16299
+
+* Mon Dec 04 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.13.3-2
+- Rebuild with golang 1.20.10 for CVE-2023-39321
+- Related: Jira:RHEL-4517
+
 * Fri Aug 25 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-1
 - update to https://github.com/containers/skopeo/releases/tag/v1.13.3
 - Related: #2176055

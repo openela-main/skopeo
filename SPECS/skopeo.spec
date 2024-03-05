@@ -15,7 +15,7 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 Epoch: 2
 Name: skopeo
 Version: 1.13.3
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -27,7 +27,7 @@ Source0: https://%{import_path}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar
 Source0: https://%{import_path}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
 %endif
 BuildRequires: git-core
-BuildRequires: golang >= 1.16.6
+BuildRequires: golang >= 1.20.10
 BuildRequires: /usr/bin/go-md2man
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
@@ -47,7 +47,7 @@ Requires: %{name} = %{epoch}:%{version}-%{release}
 #Requires: bats  (which RHEL8 doesn't have. If it ever does, un-comment this)
 Requires: gnupg
 Requires: jq
-Requires: golang
+Requires: golang >= 1.20.10
 Requires: podman
 Requires: crun
 Requires: httpd-tools
@@ -124,6 +124,14 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Fri Dec 01 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.13.3-3
+- Rebuild with golang 1.20.10
+- Related: Jira:RHEL-2786
+
+* Fri Dec 01 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.13.3-2
+- Rebuild with golang 1.21.3
+- Related: Jira:RHEL-2786
+
 * Fri Aug 25 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-1
 - update to https://github.com/containers/skopeo/releases/tag/v1.13.3
 - Related: #2176063

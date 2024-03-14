@@ -15,7 +15,7 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 Epoch: 2
 Name: skopeo
 Version: 1.13.3
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -124,6 +124,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Fri Feb 23 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-4
+- rebuild
+- Resolves: RHEL-18380
+
 * Fri Dec 01 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.13.3-3
 - Rebuild with golang 1.20.10
 - Related: Jira:RHEL-2786

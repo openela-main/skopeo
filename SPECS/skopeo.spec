@@ -8,14 +8,14 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 %endif
 
 %global import_path github.com/containers/%{name}
-#%%global branch release-1.11
-%global commit0 9e29e4cede9bdaa4a54aa5b0af86efedb823bde4
+%global branch release-1.14
+%global commit0 5f2b9afebe813012e936cd5b3f4bae1caae8bd6f
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Epoch: 2
 Name: skopeo
-Version: 1.13.3
-Release: 4%{?dist}
+Version: 1.14.3
+Release: 2%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -124,9 +124,37 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
-* Fri Feb 23 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.13.3-4
-- rebuild
-- Resolves: RHEL-18380
+* Fri Apr 19 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-2
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
+  (https://github.com/containers/skopeo/commit/5f2b9af)
+- Resolves: RHEL-28736
+
+* Mon Apr 01 2024 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.14.3-1
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
+  (https://github.com/containers/skopeo/commit/4a2bc3a)
+- Resolves: RHEL-28235
+
+* Mon Mar 18 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-0.2
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
+  (https://github.com/containers/skopeo/commit/d0a0f1a)
+- Resolves: RHEL-28235
+
+* Fri Feb 02 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-0.1
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
+  (https://github.com/containers/skopeo/commit/1c2ab99)
+- Related: RHEL-2112
+
+* Wed Jan 31 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.1-2
+- Switch to the maint branch
+- Related: Jira:RHEL-2112
+
+* Fri Jan 19 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.1-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.14.1
+- Related: RHEL-2112
+
+* Wed Dec 06 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.14.0-1
+- bump to v1.14.0
+- Related: Jira:RHEL-2112
 
 * Fri Dec 01 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.13.3-3
 - Rebuild with golang 1.20.10

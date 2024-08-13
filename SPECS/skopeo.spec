@@ -10,13 +10,13 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 
 %global import_path github.com/containers/%{name}
 %global branch release-1.14
-%global commit0 78d9c9a5a94172d1768640651906ed66a395e496
+%global commit0 072072bf6e451bbd1e69a40177d047f088eca393
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Epoch: 2
 Name: skopeo
-Version: 1.14.4
-Release: 1%{?dist}
+Version: 1.14.5
+Release: 3%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -122,6 +122,23 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Mon Aug 05 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-3
+- rebuild for  golang fixes
+- Related: RHEL-28452
+
+* Thu Aug 01 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-2
+- rebuild for  golang fixes
+- Related: RHEL-28452
+
+* Wed Jul 17 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-1
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
+  (https://github.com/containers/skopeo/commit/072072b)
+- Resolves: RHEL-40801
+
+* Fri Jun 21 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.4-2
+- rebuild for CVE-2024-24786
+- Resolves: RHEL-24297
+
 * Thu Jun 13 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.4-1
 - update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
   (https://github.com/containers/skopeo/commit/78d9c9a)

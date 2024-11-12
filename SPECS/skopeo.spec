@@ -8,14 +8,14 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 %endif
 
 %global import_path github.com/containers/%{name}
-%global branch release-1.14
-%global commit0 072072bf6e451bbd1e69a40177d047f088eca393
+#%%global branch release-1.14
+%global commit0 fe07cc958acae9bb520f685474a50178e00b815b
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Epoch: 2
 Name: skopeo
-Version: 1.14.5
-Release: 2%{?dist}
+Version: 1.16.1
+Release: 1%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -124,33 +124,25 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
-* Tue Oct 08 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-2
-- rebuild for CVE-2024-34156
-- Resolves: RHEL-57955
+* Mon Aug 26 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.16.1-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.16.1
+- Related: RHEL-27608
 
-* Wed Jul 17 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-1
-- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
-  (https://github.com/containers/skopeo/commit/072072b)
-- Resolves: RHEL-40805
+* Mon Jul 29 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.16.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.16.0
+- Resolves: RHEL-47197 RHEL-44886 RHEL-40812
 
-* Fri Jun 21 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-3
-- rebuild for CVE-2024-1394
-- Resolves: RHEL-24321
+* Fri Jul 12 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.15.2-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.15.2
+- Related: RHEL-27608
 
-* Fri Apr 19 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-2
-- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
-  (https://github.com/containers/skopeo/commit/5f2b9af)
-- Resolves: RHEL-28736
+* Fri May 17 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.15.1-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.15.1
+- Resolves: RHEL-35443
 
-* Mon Apr 01 2024 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.14.3-1
-- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
-  (https://github.com/containers/skopeo/commit/4a2bc3a)
-- Resolves: RHEL-28235
-
-* Mon Mar 18 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-0.2
-- update to the latest content of https://github.com/containers/skopeo/tree/release-1.14
-  (https://github.com/containers/skopeo/commit/d0a0f1a)
-- Resolves: RHEL-28235
+* Fri Mar 15 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.15.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.15.0
+- Resolves: RHEL-29277
 
 * Fri Feb 02 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.14.3-0.1
 - update to the latest content of https://github.com/containers/skopeo/tree/release-1.14

@@ -9,8 +9,8 @@
 
 %global gomodulesmode GO111MODULE=on
 
-#%%global branch release-1.18
-%global commit0 64361bde0687b2d8ae490fd9d7358a1e89d70e5b
+%global branch release-1.18
+%global commit0 bfd0850f067e79cf4a60a911e212a62bd55181fb
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -24,8 +24,8 @@
 
 Name: skopeo
 Epoch: 2
-Version: 1.18.0
-Release: 2%{?dist}
+Version: 1.18.1
+Release: 1%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
 %if %{defined golang_arches_future}
@@ -161,6 +161,12 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
+* Mon Mar 17 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.1-1
+- update to the latest content of https://github.com/containers/skopeo/tree/release-1.18
+  (https://github.com/containers/skopeo/commit/bfd0850)
+- fixes "CVE-2025-27144 skopeo: Go JOSE's Parsing Vulnerable to Denial of Service [rhel-9.6.z]"
+- Resolves: RHEL-82972
+
 * Thu Feb 13 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.0-2
 - fix the broken condition introduced by upstream
 - Related: RHEL-60277

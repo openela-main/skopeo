@@ -9,8 +9,8 @@
 
 %global gomodulesmode GO111MODULE=on
 
-%global branch release-1.18
-%global commit0 bfd0850f067e79cf4a60a911e212a62bd55181fb
+#%%global branch release-1.18
+%global commit0 e2c1eecd40b9121adf431a33cbbe60d22dc9fad7
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -22,12 +22,31 @@
 %define fips 1
 %endif
 
+# Only used in official koji builds
+# Copr builds set a separate epoch for all environments
+%if %{defined fedora}
+%define conditional_epoch 1
+%define fakeroot 1
+%else
+%define conditional_epoch 2
+%endif
+
 Name: skopeo
-Epoch: 2
-Version: 1.18.1
-Release: 2%{?dist}
+%if %{defined copr_username}
+Epoch: 102
+%else
+Epoch: %{conditional_epoch}
+%endif
+# DO NOT TOUCH the Version string!
+# The TRUE source of this specfile is:
+# https://github.com/containers/skopeo/blob/main/rpm/skopeo.spec
+# If that's what you're reading, Version must be 0, and will be updated by Packit for
+# copr and koji builds.
+# If you're reading this on dist-git, the version is automatically filled in by Packit.
+Version: 1.20.0
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
+Release: 1%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -52,22 +71,26 @@ BuildRequires: go-rpm-macros
 %endif
 BuildRequires: gpgme-devel
 BuildRequires: libassuan-devel
-BuildRequires: ostree-devel
 BuildRequires: glib2-devel
 BuildRequires: make
 BuildRequires: shadow-utils-subid-devel
-Requires: containers-common
+BuildRequires: sqlite-devel
+Requires: containers-common >= 4:1-21
 
 %description
 Command line utility to inspect images and repositories directly on Docker
 registries without the need to pull them
 
+# NOTE: The tests subpackage is only intended for testing and will not be supported
+# for end-users and/or customers.
 %package tests
 Summary: Tests for %{name}
 
 Requires: %{name} = %{epoch}:%{version}-%{release}
-%if %{defined fedora}
+%if %{undefined rhel}
 Requires: bats
+%endif
+%if %{defined fakeroot}
 Requires: fakeroot
 %endif
 Requires: gnupg
@@ -109,11 +132,11 @@ CGO_CFLAGS=$(echo $CGO_CFLAGS | sed 's/-specs=\/usr\/lib\/rpm\/redhat\/redhat-an
 export CGO_CFLAGS="$CGO_CFLAGS -m64 -mtune=generic -fcf-protection=full"
 %endif
 
-BASEBUILDTAGS="$(hack/libsubid_tag.sh)"
+BASEBUILDTAGS="$(hack/libsubid_tag.sh) libsqlite3"
 %if %{defined build_with_btrfs}
-export BUILDTAGS="$BASEBUILDTAGS $(hack/btrfs_tag.sh) $(hack/btrfs_installed_tag.sh)"
+export BUILDTAGS="$BASEBUILDTAGS $(hack/btrfs_installed_tag.sh)"
 %else
-export BUILDTAGS="$BASEBUILDTAGS btrfs_noversion exclude_graphdriver_btrfs"
+export BUILDTAGS="$BASEBUILDTAGS exclude_graphdriver_btrfs"
 %endif
 
 %if %{defined fips}
@@ -161,15 +184,31 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
-* Wed Jun 04 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.1-2
-- rebuild to fix CVE-2025-22871 skopeo: Request smuggling due to acceptance of invalid chunked data in net/http
-- Resolves: RHEL-89329
+* Mon Aug 11 2025 Jindrich Novy <jnovy@redhat.com> - 1:1.20.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.20.0
+- Related: RHEL-80816
 
-* Mon Mar 17 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.1-1
+* Wed Jun 18 2025 Jindrich Novy <jnovy@redhat.com> - 1:1.19.0-2
+- Do not require BATS on RHEL
+- Resolves: RHEL-97592
+
+* Tue Jun 10 2025 Jindrich Novy <jnovy@redhat.com> - 1:1.19.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.19.0
+- Related: RHEL-80816
+
+* Tue Mar 18 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.1-3
+- fix gating.yaml
+- Related: RHEL-80816
+
+* Fri Mar 14 2025 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.18.1-2
+- Fix bats dep on tests subpackage
+- Resolves: RHEL-80616
+
+* Fri Mar 14 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.1-1
 - update to the latest content of https://github.com/containers/skopeo/tree/release-1.18
   (https://github.com/containers/skopeo/commit/bfd0850)
-- fixes "CVE-2025-27144 skopeo: Go JOSE's Parsing Vulnerable to Denial of Service [rhel-9.6.z]"
-- Resolves: RHEL-82972
+- fixes "CVE-2025-27144 skopeo: Go JOSE's Parsing Vulnerable to Denial of Service [rhel-9.7]"
+- Resolves: RHEL-80616
 
 * Thu Feb 13 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.18.0-2
 - fix the broken condition introduced by upstream

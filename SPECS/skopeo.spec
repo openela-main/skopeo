@@ -9,8 +9,8 @@
 
 %global gomodulesmode GO111MODULE=on
 
-#%%global branch release-1.18
-%global commit0 e2c1eecd40b9121adf431a33cbbe60d22dc9fad7
+#%%global branch release-1.21
+%global commit0 267465e170820673de25149378284fb352daa65e
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -20,6 +20,8 @@
 
 %if %{defined rhel}
 %define fips 1
+# https://issues.redhat.com/browse/RHEL-56364
+%define sequoia 1
 %endif
 
 # Only used in official koji builds
@@ -43,10 +45,10 @@ Epoch: %{conditional_epoch}
 # If that's what you're reading, Version must be 0, and will be updated by Packit for
 # copr and koji builds.
 # If you're reading this on dist-git, the version is automatically filled in by Packit.
-Version: 1.20.0
+Version: 1.22.2
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 3%{?dist}
+Release: 1%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -76,23 +78,20 @@ BuildRequires: make
 BuildRequires: shadow-utils-subid-devel
 BuildRequires: sqlite-devel
 Requires: containers-common >= 4:1-21
+%if %{defined sequoia}
+Requires: podman-sequoia
+%endif
 
 %description
 Command line utility to inspect images and repositories directly on Docker
-registries without the need to pull them
+registries without the need to pull them.
 
 # NOTE: The tests subpackage is only intended for testing and will not be supported
 # for end-users and/or customers.
 %package tests
-Summary: Tests for %{name}
+Summary: Test dependencies for %{name}
 
 Requires: %{name} = %{epoch}:%{version}-%{release}
-%if %{undefined rhel}
-Requires: bats
-%endif
-%if %{defined fakeroot}
-Requires: fakeroot
-%endif
 Requires: gnupg
 Requires: jq
 Requires: golang
@@ -101,11 +100,12 @@ Requires: crun
 Requires: httpd-tools
 Requires: openssl
 Requires: squashfs-tools
+# bats and fakeroot are not present on RHEL and ELN so they shouldn't be strong deps
+Recommends: bats
+Recommends: fakeroot
 
 %description tests
-%{summary}
-
-This package contains system tests for %{name}
+This package installs system test dependencies for %{name}
 
 %prep
 %if 0%{?branch:1}
@@ -143,6 +143,10 @@ export BUILDTAGS="$BASEBUILDTAGS exclude_graphdriver_btrfs"
 export BUILDTAGS="$BUILDTAGS libtrust_openssl"
 %endif
 
+%if %{defined sequoia}
+export BUILDTAGS="$BUILDTAGS containers_image_sequoia"
+%endif
+
 # unset LDFLAGS earlier set from set_build_flags
 LDFLAGS=''
 
@@ -154,10 +158,6 @@ make \
     DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
     install-binary install-docs install-completions
-
-# system tests
-install -d -p %{buildroot}/%{_datadir}/%{name}/test/system
-cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
@@ -179,18 +179,31 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_%{name}
 
+# Only test dependencies installed, no files.
 %files tests
-%license LICENSE vendor/modules.txt
-%{_datadir}/%{name}/test
 
 %changelog
-* Fri Feb 20 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.20.0-3
-- Rebuild for new golang to address CVE-2025-61726
-- Resolves: RHEL-146730
+* Wed Apr 15 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.22.2
+- fixes signature verification of images which only sign the per-platform
+  manifest in skopeo proxy
+- Resolves: RHEL-168168
 
-* Thu Nov 20 2025 Jindrich Novy <jnovy@redhat.com> - 1:1.20.0-2
-- rebuild for CVE-2025-58183
-- Resolves: RHEL-125643
+* Tue Apr 07 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-3
+- enable sequoia
+- Resolves: RHEL-56364
+
+* Mon Feb 23 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-2
+- Rebuild for new golang to address CVE-2025-68121
+- Resolves: RHEL-149255
+
+* Thu Feb 12 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.22.0
+- Related: RHEL-122178
+
+* Tue Feb 03 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.21.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.21.0
+- Related: RHEL-122178
 
 * Mon Aug 11 2025 Jindrich Novy <jnovy@redhat.com> - 1:1.20.0-1
 - update to https://github.com/containers/skopeo/releases/tag/v1.20.0

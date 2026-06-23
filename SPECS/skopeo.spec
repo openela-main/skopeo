@@ -46,7 +46,7 @@ Epoch: %{conditional_epoch}
 Version: 1.22.2
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 1%{?dist}
+Release: 6%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -157,6 +157,10 @@ make \
     PREFIX=%{_prefix} \
     install-binary install-docs install-completions
 
+# system tests
+install -d -p %{buildroot}/%{_datadir}/%{name}/test/system
+cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
+
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
 
@@ -177,10 +181,20 @@ make \
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_%{name}
 
-# Only test dependencies installed, no files.
 %files tests
+%license LICENSE vendor/modules.txt
+%{_datadir}/%{name}/test
 
 %changelog
+* Thu May 07 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-6
+- Rebuild for CVE-2026-32283
+- Resolves: RHEL-167688
+
+* Mon May 04 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-5
+- Rebuild for CVE-2026-25679
+- Re-add test file installation to fix tier0 tests
+- Resolves: RHEL-158789
+
 * Wed Apr 15 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-1
 - update to https://github.com/containers/skopeo/releases/tag/v1.22.2
 - fixes signature verification of images which only sign the per-platform

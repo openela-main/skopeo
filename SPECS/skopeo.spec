@@ -10,13 +10,13 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl 
 
 %global import_path github.com/containers/%{name}
 %global branch release-1.14
-%global commit0 072072bf6e451bbd1e69a40177d047f088eca393
+%global commit0 3a559b2d652abdae5cd63f5093d0d110de524499
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Epoch: 2
 Name: skopeo
-Version: 1.14.5
-Release: 7%{?dist}
+Version: 1.14.6
+Release: 2%{?dist}
 Summary: Inspect container images and repositories on registries
 License: ASL 2.0
 URL: https://%{import_path}
@@ -122,6 +122,22 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_datadir}/%{name}/test
 
 %changelog
+* Wed May 20 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.14.6-2
+- Rebuild for CVE-2026-32281
+- Resolves: RHEL-177067
+
+* Thu Apr 30 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.14.6-1
+- update to 1.14.6 to fix CVE-2026-34986
+- Resolves: RHEL-164976
+
+* Thu Apr 30 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-9
+- rebuild for CVE-2026-34986
+- Resolves: RHEL-164976
+
+* Mon Apr 20 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-8
+- rebuild for CVE-2026-25679
+- Resolves: RHEL-156633
+
 * Tue Feb 17 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.14.5-7
 - rebuild for CVE-2025-68121
 - Resolves: RHEL-149267

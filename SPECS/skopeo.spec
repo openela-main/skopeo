@@ -46,7 +46,7 @@ Epoch: %{conditional_epoch}
 Version: 1.22.2
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 8%{?dist}
+Release: 9%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -186,6 +186,11 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
+* Sat Oct 24 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-9
+- Rebuild for CVE-2026-78667 and CVE-2026-111943
+- Resolves: RHEL-279016
+- Resolves: RHEL-287514
+
 * Mon Sep 21 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-8
 - rebuild for CVE-2026-56853 CVE-2026-56858 CVE-2026-33818 CVE-2026-56860 CVE-2026-56862
 - Resolves: RHEL-242042

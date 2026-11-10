@@ -10,7 +10,7 @@
 %global gomodulesmode GO111MODULE=on
 
 #%%global branch release-1.21
-%global commit0 267465e170820673de25149378284fb352daa65e
+%global commit0 ea7faa7ba79b2e3308259673fbd3b472198afd1a
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -20,8 +20,6 @@
 
 %if %{defined rhel}
 %define fips 1
-# https://issues.redhat.com/browse/RHEL-56364
-%define sequoia 1
 %endif
 
 # Only used in official koji builds
@@ -30,7 +28,7 @@
 %define conditional_epoch 1
 %define fakeroot 1
 %else
-%define conditional_epoch 2
+%define conditional_epoch 3
 %endif
 
 Name: skopeo
@@ -45,10 +43,10 @@ Epoch: %{conditional_epoch}
 # If that's what you're reading, Version must be 0, and will be updated by Packit for
 # copr and koji builds.
 # If you're reading this on dist-git, the version is automatically filled in by Packit.
-Version: 1.22.2
+Version: 1.24.0
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 6%{?dist}
+Release: 2%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -60,7 +58,7 @@ URL: https://github.com/containers/%{name}
 %if 0%{?branch:1}
 Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
 %else
-Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
+Source0: https://github.com/containers/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 BuildRequires: %{_bindir}/go-md2man
 %if %{defined build_with_btrfs}
@@ -111,7 +109,7 @@ This package installs system test dependencies for %{name}
 %if 0%{?branch:1}
 %autosetup -Sgit -n containers-%{name}-%{shortcommit0}
 %else
-%autosetup -Sgit -n %{name}-%{commit0}
+%autosetup -Sgit -n %{name}-%{version}
 %endif
 # The %%install stage should not rebuild anything but only install what's
 # built in the %%build stage. So, remove any dependency on build targets.
@@ -188,33 +186,26 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
-* Wed Oct 21 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-6
-- Rebuild for CVE-2026-111943
-- Resolves: RHEL-287480
+* Thu Aug 20 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-2
+- Rebuild for new Go and address CVE-2026-41567, CVE-2026-56853, CVE-2026-56862,
+  CVE-2026-33818, CVE-2026-56860, CVE-2026-56858, CVE-2026-56859
+- Resolves: RHEL-188947, RHEL-241185, RHEL-241449, RHEL-241555, RHEL-241782, RHEL-242150
 
-* Wed Sep 02 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-5
-- Rebuild for golang CVE fixes
-- Resolves: RHEL-241177 RHEL-241425 RHEL-241563 RHEL-241763 RHEL-242151 RHEL-251832
+* Mon Aug 03 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.24.0
+- Resolves: RHEL-185735
 
-* Wed Jul 08 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-4
-- re-add test file installation to fix tier0 tests
+* Thu Jul 30 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.23.0-2
+- bump Epoch to preserve upgrade path
+- Resolves: RHEL-220536
 
-* Wed Jul 08 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-3
-- Rebuild for CVE-2026-27145
-
-* Mon May 04 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-2
-- Rebuild for CVE-2026-25679
-- Resolves: RHEL-158499
-
-* Wed Apr 15 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-1
+* Wed Jun 17 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.23.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.23.0
+- Resolves: RHEL-185735
+* Thu Apr 23 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-2
 - update to https://github.com/containers/skopeo/releases/tag/v1.22.2
-- fixes signature verification of images which only sign the per-platform
-  manifest in skopeo proxy
-- Resolves: RHEL-168168
-
-* Tue Apr 07 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-3
-- enable sequoia
-- Resolves: RHEL-56364
+- re-add test file installation to fix tier0 tests
+- Resolves: RHEL-153734
 
 * Mon Feb 23 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-2
 - Rebuild for new golang to address CVE-2025-68121

@@ -20,6 +20,7 @@
 
 %if %{defined rhel}
 %define fips 1
+%define sequoia 1
 %endif
 
 # Only used in official koji builds
@@ -46,7 +47,7 @@ Epoch: %{conditional_epoch}
 Version: 1.24.0
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -186,10 +187,16 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
-* Thu Aug 20 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-2
-- Rebuild for new Go and address CVE-2026-41567, CVE-2026-56853, CVE-2026-56862,
-  CVE-2026-33818, CVE-2026-56860, CVE-2026-56858, CVE-2026-56859
-- Resolves: RHEL-188947, RHEL-241185, RHEL-241449, RHEL-241555, RHEL-241782, RHEL-242150
+* Mon Sep 14 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-3
+- Re-enable Sequoia PGP support - Resolves: RHEL-258200
+
+* Tue Sep 01 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-2
+- Rebuild for Go security fixes (Go 1.26.7)
+- Resolves: RHEL-241185
+- Resolves: RHEL-241449
+- Resolves: RHEL-241555
+- Resolves: RHEL-241782
+- Resolves: RHEL-242150
 
 * Mon Aug 03 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-1
 - update to https://github.com/containers/skopeo/releases/tag/v1.24.0

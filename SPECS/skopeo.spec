@@ -9,8 +9,8 @@
 
 %global gomodulesmode GO111MODULE=on
 
-#%%global branch release-1.21
-%global commit0 267465e170820673de25149378284fb352daa65e
+%global branch release-1.22
+%global commit0 094478d3691b8e54b8d9e87d9693f7933d75408c
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -28,7 +28,7 @@
 %define conditional_epoch 1
 %define fakeroot 1
 %else
-%define conditional_epoch 2
+%define conditional_epoch 3
 %endif
 
 Name: skopeo
@@ -46,7 +46,7 @@ Epoch: %{conditional_epoch}
 Version: 1.22.2
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 9%{?dist}
+Release: 5%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -56,7 +56,7 @@ Summary: Inspect container images and repositories on registries
 URL: https://github.com/containers/%{name}
 # Tarball fetched from upstream
 %if 0%{?branch:1}
-Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
+Source0: https://gitlab.cee.redhat.com/sustaining-engineering/container-tools/src-git/%{name}/-/archive/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
 %else
 Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
 %endif
@@ -106,11 +106,7 @@ Recommends: fakeroot
 This package installs system test dependencies for %{name}
 
 %prep
-%if 0%{?branch:1}
-%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
-%else
 %autosetup -Sgit -n %{name}-%{commit0}
-%endif
 # The %%install stage should not rebuild anything but only install what's
 # built in the %%build stage. So, remove any dependency on build targets.
 sed -i 's/^install-binary: bin\/%{name}.*/install-binary:/' Makefile
@@ -186,37 +182,33 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
-* Sat Oct 24 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-9
-- Rebuild for CVE-2026-78667 and CVE-2026-111943
-- Resolves: RHEL-279016
-- Resolves: RHEL-287514
+* Tue Sep 01 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.22.2-5
+- Rebuild for CVE fixes in Go standard library
+- Resolves: RHEL-241116 RHEL-241304 RHEL-241601 RHEL-241835 RHEL-242236 RHEL-251879
 
-* Mon Sep 21 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-8
-- rebuild for CVE-2026-56853 CVE-2026-56858 CVE-2026-33818 CVE-2026-56860 CVE-2026-56862
-- Resolves: RHEL-242042
-- Resolves: RHEL-241280
-- Resolves: RHEL-241460
-- Resolves: RHEL-241825
-- Resolves: RHEL-242268
+* Wed Aug 19 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.22.2-4
+- Rebuild for golang-1.26.6 CVE fixes (CVE-2025-68121 CVE-2026-33811
+  CVE-2026-27145 CVE-2026-33818 CVE-2026-56853 CVE-2026-56858 CVE-2026-56859
+  CVE-2026-56860 CVE-2026-56862)
+- Resolves: RHEL-164492 RHEL-187324 RHEL-190003 RHEL-241116 RHEL-241304
+  RHEL-241601 RHEL-241835 RHEL-242236
 
-* Tue Jul 07 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-7
-- Rebuild for golang >= 1.26.4 to fix CVE-2026-27145
-- Resolves: RHEL-189898
+* Thu Jul 30 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.22.2-1
+- switch to sustaining-engineering GitLab release-1.22 branch and bump epoch to
+  fix upgrade path
+- Resolves: RHEL-220456
 
-* Thu May 07 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-6
-- Rebuild for CVE-2026-32283
-- Resolves: RHEL-167688
-
-* Mon May 04 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-5
-- Rebuild for CVE-2026-25679
-- Re-add test file installation to fix tier0 tests
-- Resolves: RHEL-158789
-
-* Wed Apr 15 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-1
+* Wed Jun 17 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.23.0-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.23.0
+- Resolves: RHEL-185740
+* Thu Apr 23 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-2
 - update to https://github.com/containers/skopeo/releases/tag/v1.22.2
-- fixes signature verification of images which only sign the per-platform
-  manifest in skopeo proxy
-- Resolves: RHEL-168166
+- re-add test file installation to fix tier0 tests
+- Resolves: RHEL-170602
+
+* Thu Apr 23 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.22.2-1
+- update to https://github.com/containers/skopeo/releases/tag/v1.22.2
+- Resolves: RHEL-170602
 
 * Mon Feb 23 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.0-2
 - Rebuild for new golang to address CVE-2025-68121

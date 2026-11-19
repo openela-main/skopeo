@@ -18,9 +18,6 @@
 %define build_with_btrfs 1
 %endif
 
-%if %{defined rhel}
-%define fips 1
-%endif
 
 # Only used in official koji builds
 # Copr builds set a separate epoch for all environments
@@ -46,7 +43,7 @@ Epoch: %{conditional_epoch}
 Version: 1.22.2
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 4%{?dist}
+Release: 6%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -133,9 +130,6 @@ export BUILDTAGS="$BASEBUILDTAGS $(hack/btrfs_installed_tag.sh)"
 export BUILDTAGS="$BASEBUILDTAGS exclude_graphdriver_btrfs"
 %endif
 
-%if %{defined fips}
-export BUILDTAGS="$BUILDTAGS libtrust_openssl"
-%endif
 
 %if %{defined sequoia}
 export BUILDTAGS="$BUILDTAGS containers_image_sequoia"
@@ -182,6 +176,14 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
+* Tue Nov 03 2026 Jindrich Novy <jnovy@redhat.com> - 1:1.22.2-6
+- Drop libtrust_openssl build tag for golang-1.27 compatibility
+- Resolves: RHEL-299628
+
+* Tue Sep 01 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.22.2-5
+- Rebuild for CVE fixes in Go standard library
+- Resolves: RHEL-241116 RHEL-241304 RHEL-241601 RHEL-241835 RHEL-242236 RHEL-251879
+
 * Wed Aug 19 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.22.2-4
 - Rebuild for golang-1.26.6 CVE fixes (CVE-2025-68121 CVE-2026-33811
   CVE-2026-27145 CVE-2026-33818 CVE-2026-56853 CVE-2026-56858 CVE-2026-56859

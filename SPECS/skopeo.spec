@@ -9,8 +9,8 @@
 
 %global gomodulesmode GO111MODULE=on
 
-#%%global branch release-1.21
-%global commit0 ea7faa7ba79b2e3308259673fbd3b472198afd1a
+%global branch release-1.24
+%global commit0 a2f79487a6c503f1d9b111aae66bc043e1f26bd5
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 # No btrfs on RHEL
@@ -19,7 +19,6 @@
 %endif
 
 %if %{defined rhel}
-%define fips 1
 %define sequoia 1
 %endif
 
@@ -44,10 +43,10 @@ Epoch: %{conditional_epoch}
 # If that's what you're reading, Version must be 0, and will be updated by Packit for
 # copr and koji builds.
 # If you're reading this on dist-git, the version is automatically filled in by Packit.
-Version: 1.24.0
+Version: 1.24.1
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND ISC AND MIT AND MPL-2.0
-Release: 3%{?dist}
+Release: 1%{?dist}
 %if %{defined golang_arches_future}
 ExclusiveArch: %{golang_arches_future}
 %else
@@ -57,7 +56,7 @@ Summary: Inspect container images and repositories on registries
 URL: https://github.com/containers/%{name}
 # Tarball fetched from upstream
 %if 0%{?branch:1}
-Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
+Source0: https://gitlab.cee.redhat.com/sustaining-engineering/container-tools/src-git/%{name}/-/archive/%{commit0}/%{name}-%{commit0}.tar.gz
 %else
 Source0: https://github.com/containers/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
@@ -108,7 +107,7 @@ This package installs system test dependencies for %{name}
 
 %prep
 %if 0%{?branch:1}
-%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
+%autosetup -Sgit -n %{name}-%{commit0}
 %else
 %autosetup -Sgit -n %{name}-%{version}
 %endif
@@ -138,9 +137,6 @@ export BUILDTAGS="$BASEBUILDTAGS $(hack/btrfs_installed_tag.sh)"
 export BUILDTAGS="$BASEBUILDTAGS exclude_graphdriver_btrfs"
 %endif
 
-%if %{defined fips}
-export BUILDTAGS="$BUILDTAGS libtrust_openssl"
-%endif
 
 %if %{defined sequoia}
 export BUILDTAGS="$BUILDTAGS containers_image_sequoia"
@@ -187,6 +183,14 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 %{_datadir}/%{name}/test
 
 %changelog
+* Mon Nov 09 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.1-1
+- Bump to skopeo 1.24.1 from release-1.24-rhel sustaining branch
+- Resolves: RHEL-279315
+
+* Tue Nov 03 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-4
+- Drop libtrust_openssl build tag for golang-1.27 compatibility
+- Resolves: RHEL-299627
+
 * Mon Sep 14 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.24.0-3
 - Re-enable Sequoia PGP support - Resolves: RHEL-258200
 
